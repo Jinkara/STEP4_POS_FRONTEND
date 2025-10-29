@@ -1,10 +1,12 @@
-require('dotenv').config()
+require('dotenv').config();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    env: {
-        // Reference a variable that was defined in the .env file and make it available at Build Time
-        API_ENDPOINT: process.env.API_ENDPOINT,
-      },
-}
+  env: {
+    // .env の API_ENDPOINT をビルド時に Next.js で使えるようにする
+    API_ENDPOINT: process.env.API_ENDPOINT,
+  },
+  output: 'standalone', // Azure デプロイに必要
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
