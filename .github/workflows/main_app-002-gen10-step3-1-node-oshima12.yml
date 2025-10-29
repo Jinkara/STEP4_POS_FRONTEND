@@ -73,9 +73,10 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-001-step3-1-suzuyu-node-12'
+          app-name: 'app-002-gen10-step3-1-node-oshima12'
           slot-name: 'Production'
           package: ./deploy #4
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_92FF5DF8464A40B4A0013E6F13ABAB1F }}
+
 
 
