@@ -24,7 +24,7 @@ jobs:
           node-version: '20.x'
 
       - name: npm install, build, and test
-      #1 変更済み
+        working-directory: ./frontend
         env:
           NEXT_PUBLIC_API_ENDPOINT: ${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}
         run: |
@@ -77,3 +77,4 @@ jobs:
           slot-name: 'Production'
           package: ./deploy #4
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_92FF5DF8464A40B4A0013E6F13ABAB1F }}
+
