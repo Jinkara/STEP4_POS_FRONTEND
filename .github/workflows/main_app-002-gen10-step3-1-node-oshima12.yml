@@ -33,16 +33,15 @@ jobs:
           npm run test --if-present
 
       #2
-      - name: Copy artifact for deplopyment job
-        # run: /
-        #   mkdir deploy
-        #   cp -r ./.next/standalone/. ./deploy
-        #   cp -r ./.next/static/. ./deploy/.next/static
-
+      - name: Copy artifact for deployment job
         run: |
-          mkdir -p ./deploy/.next/static
-          if [ -d ".next/standalone" ]; then cp -r .next/standalone/. ./deploy/; fi
-          if [ -d ".next/static" ]; then cp -r .next/static/. ./deploy/.next/static; fi
+          mkdir -p ./deploy
+          cp -r .next/standalone/* ./deploy/
+          cp -r .next/static ./deploy/.next/static
+          cp package.json ./deploy/
+          cp next.config.js ./deploy/
+          cp -r public ./deploy/public || echo "No public directory"
+
 
       - name: Zip artifact for deployment
         run: zip release.zip ./deploy -r #3
@@ -77,6 +76,7 @@ jobs:
           slot-name: 'Production'
           package: ./deploy #4
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_92FF5DF8464A40B4A0013E6F13ABAB1F }}
+
 
 
 
