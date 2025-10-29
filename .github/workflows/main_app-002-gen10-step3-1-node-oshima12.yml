@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -32,25 +32,32 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-      #2
       - name: Copy artifact for deployment job
+        working-directory: ./frontend
         run: |
           mkdir -p ./deploy
-          cp -r .next/standalone/* ./deploy/
-          cp -r .next/static ./deploy/.next/static
+          if [ -d ".next/standalone" ]; then
+            cp -r .next/standalone/* ./deploy/
+          else
+            echo "⚠️ standalone folder not found!"
+          fi
+          if [ -d ".next/static" ]; then
+            mkdir -p ./deploy/.next/static
+            cp -r .next/static/* ./deploy/.next/static/
+          fi
           cp package.json ./deploy/
           cp next.config.js ./deploy/
           cp -r public ./deploy/public || echo "No public directory"
 
-
       - name: Zip artifact for deployment
-        run: zip release.zip ./deploy -r #3
+        working-directory: ./frontend
+        run: zip -r release.zip ./deploy
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: release.zip
+          path: ./frontend/release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -58,7 +65,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -67,15 +74,17 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-002-gen10-step3-1-node-oshima12'
           slot-name: 'Production'
-          package: ./deploy #4
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_XXXXXX }}
+          package: ./frontend/deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_92FF5DF8464A40B4A0013E6F13ABAB1F }}
+
 
 
 
